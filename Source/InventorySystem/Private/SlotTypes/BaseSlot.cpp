@@ -28,8 +28,7 @@ bool UBaseSlot::TryTransfer(UBaseSlot* Source)
 		return false;
 	}
 
-	Original->PerformSourcePrerequisites(this);
-	this->PerformDestinationPrerequisites(Original);
+	Original->PerformPrerequisites(this);
 	return true;
 }
 
@@ -40,27 +39,18 @@ void UBaseSlot::Swap(UBaseSlot* Source)
 	Source->SetSlot(Original->Item, Original->Amount);
 }
 
-bool UBaseSlot::CheckSourcePrerequisites(UBaseSlot* Source)
+bool UBaseSlot::CheckPrerequisites(UBaseSlot* Other)
 {
 	return true;
 }
 
-bool UBaseSlot::CheckDestinationPrerequisites(UBaseSlot* Source)
-{
-	return true;
-}
-
-void UBaseSlot::PerformSourcePrerequisites(UBaseSlot* Source)
-{
-}
-
-void UBaseSlot::PerformDestinationPrerequisites(UBaseSlot* Source)
+void UBaseSlot::PerformPrerequisites(UBaseSlot* Other)
 {
 }
 
 bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETransferErrorCodes& Error)
 {
-	if(!Source->CheckSourcePrerequisites(this) || !this->CheckDestinationPrerequisites(Source))
+	if(!Source->CheckPrerequisites(this))
 	{
 		Type = ETransferType::None;
 		Error = ETransferErrorCodes::PrerequisiteInvalid;
@@ -84,7 +74,7 @@ bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETrans
 
 bool UBaseSlot::IsSameType(const UBaseItem* SourceItem) const
 {
-	return SourceItem != nullptr && Item != nullptr ? SourceItem->StaticClass() == Item->StaticClass() : false;
+	return SourceItem != nullptr && Item != nullptr ? SourceItem == Item : false;
 }
 
 void UBaseSlot::MergeAll(UBaseSlot* Source)
@@ -94,7 +84,7 @@ void UBaseSlot::MergeAll(UBaseSlot* Source)
 	const int DestinationAmount = MaxSize > 0 ? FMath::Min(Total, MaxSize) : Total;
 	const int SourceAmount = MaxSize > 0 ? FMath::Max(0, Total - MaxSize) : 0;
 	SetSlot(Source->Item, DestinationAmount);
-	Source->SetSlot(SourceAmount > 0 ? Source->Item : nullptr, SourceAmount);
+	Source->SetSlot(Source->Item, SourceAmount);
 }
 
 void UBaseSlot::SetSlot(UBaseItem* NewItem, const int NewAmount)

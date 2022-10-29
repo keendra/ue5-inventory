@@ -18,3 +18,31 @@ TArray<UInventory*> UInventoryFunctionLibrary::GetVisibleInventories(AActor* Act
 			return Inventory->InventoryConfig->Show;
 	});
 }
+
+TArray<UBaseSlot*> UInventoryFunctionLibrary::GetSlotsWithItem(AActor* Actor, UBaseItem* Item)
+{
+	TArray<UInventory*> Components;
+	Actor->GetComponents<UInventory>(Components);
+
+	TArray<UBaseSlot*> Result;
+
+	for (const UInventory* Inventory : Components)
+	{
+		Result.Append(Inventory->GetSlotsWithItem(Item));
+	}
+
+	return Result;
+}
+
+int UInventoryFunctionLibrary::GetOwnItemAmount(AActor* Actor, UBaseItem* Item)
+{
+	TArray<UBaseSlot*> OwnedInSlots = GetSlotsWithItem(Actor, Item);
+	int Amount = 0;
+
+	for (const UBaseSlot* Slot : OwnedInSlots)
+	{
+		Amount += Slot->GetAmount();
+	}
+
+	return Amount;
+}

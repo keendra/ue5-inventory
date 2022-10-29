@@ -19,4 +19,10 @@ class INVENTORYSYSTEM_API UInventoryFunctionLibrary : public UBlueprintFunctionL
 public:
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	static TArray<UInventory*> GetVisibleInventories(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	static TArray<UBaseSlot*> GetSlotsWithItem(AActor* Actor, UBaseItem* Item);
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	static int GetOwnItemAmount(AActor* Actor, UBaseItem* Item);
 };

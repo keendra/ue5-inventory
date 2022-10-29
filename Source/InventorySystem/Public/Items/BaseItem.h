@@ -36,5 +36,5 @@ public:
 	int MaxStackSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
-	TMap<TSubclassOf<UBaseItem>, int> BasePrice;
+	TMap<UBaseItem*, int> BasePrice;
 };

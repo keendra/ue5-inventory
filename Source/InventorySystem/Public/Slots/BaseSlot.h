@@ -43,32 +43,37 @@ public:
 	void Swap(UBaseSlot* Source);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	virtual bool CheckSourcePrerequisites(UBaseSlot* Source);
+	virtual bool CheckPrerequisites(UBaseSlot* Other);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	virtual bool CheckDestinationPrerequisites(UBaseSlot* Destination);
-
-	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	virtual void PerformSourcePrerequisites(UBaseSlot* Source);
-
-	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	virtual void PerformDestinationPrerequisites(UBaseSlot* Destination);
+	virtual void PerformPrerequisites(UBaseSlot* Other);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
 	bool CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETransferErrorCodes& Error);
 
 	virtual void SetSlot(UBaseItem* NewItem, int NewAmount);
 
+	bool IsSameType(const UBaseItem* SourceItem) const;
+
 	UPROPERTY(BlueprintAssignable, Category = "Inventory System")
 	FSlotUpdated OnSlotUpdated;
+
+	[[nodiscard]] int GetAmount() const
+	{
+		return Amount;
+	}
+
+	[[nodiscard]] UBaseItem* GetItem() const
+	{
+		return Item;
+	}
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="Inventory System")
 	UBaseItem* Item;
-
+protected:
 	UPROPERTY(BlueprintReadWrite, Category="Inventory System")
 	int Amount;
-private:
-	bool IsSameType(const UBaseItem* SourceItem) const;
 
+private:
 	void MergeAll(UBaseSlot* Source);
 };

@@ -37,6 +37,14 @@ TArray<UBaseSlot*> UInventory::GetInventorySlots()
 	return Slots;
 }
 
+TArray<UBaseSlot*> UInventory::GetSlotsWithItem(UBaseItem* Item) const
+{
+	return Slots.FilterByPredicate([Item](const UBaseSlot* InventorySlot)
+	{
+		return InventorySlot->IsSameType(Item);
+	});
+}
+
 TSoftObjectPtr<UTexture2D> UInventory::GetIcon() const
 {
 	return InventoryConfig == nullptr ? nullptr : InventoryConfig->Icon;

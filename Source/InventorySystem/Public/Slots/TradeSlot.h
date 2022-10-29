@@ -15,8 +15,6 @@ class INVENTORYSYSTEM_API UTradeSlot : public UInventorySlot
 	GENERATED_BODY()
 
 public:
-	virtual bool CheckSourcePrerequisites(UBaseSlot* Source) override;
-	virtual bool CheckDestinationPrerequisites(UBaseSlot* Destination) override;
-	virtual void PerformSourcePrerequisites(UBaseSlot* Source) override;
-	virtual void PerformDestinationPrerequisites(UBaseSlot* Destination) override;
+	virtual bool CheckPrerequisites(UBaseSlot* Other) override;
+	virtual void PerformPrerequisites(UBaseSlot* Other) override;
 };

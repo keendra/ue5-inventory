@@ -2,42 +2,54 @@
 
 
 #include "Slots/TradeSlot.h"
+#include "InventoryFunctionLibrary.h"
 
-// TODO: If Source inventory (outer) is a different inventory.
-// Get slot owner from outer (inventory), outer (actor)
-// If same owner, item is just being moved around and this should return true
-// If not, it's moved to a different owner and the inventory need to have the
-//	required items (BaseItem->BasePrice) to perform this trade.
-//	* Add a function in InventoryFunctionLibrary to look for the inventory
-//		that contain the item and if it contain enough items.
-//		* Note that in the future we might have implemented max stack size,
-//			so this should at some point look for multiple slots if necessary
-//		* Return true if enough items exists
-
-bool UTradeSlot::CheckSourcePrerequisites(UBaseSlot* Source)
+bool UTradeSlot::CheckPrerequisites(UBaseSlot* Other)
 {
-	// If item was moved from store to user (check can bought)
-	UE_LOG(LogTemp, Warning, TEXT("Checking move from tradeslot"));
-	return Super::CheckSourcePrerequisites(Source);
+	if (!Super::CheckPrerequisites(Other))
+	{
+		return false;
+	}
+	AActor* Owner = Cast<AActor>(this->GetOuter()->GetOuter());
+	AActor* OtherOwner = Cast<AActor>(Other->GetOuter()->GetOuter());
+
+	if(Owner == OtherOwner)
+	{
+		return true;
+	}
+
+	for (const TTuple<UBaseItem*, int> Price : Item->BasePrice)
+	{
+		if (const int OwnedAmount = UInventoryFunctionLibrary::GetOwnItemAmount(OtherOwner, Price.Key);
+			Price.Value > OwnedAmount)
+		{
+			return false;
+		}
+	}
+	
+	return true;
 }
 
-bool UTradeSlot::CheckDestinationPrerequisites(UBaseSlot* Destination)
+void UTradeSlot::PerformPrerequisites(UBaseSlot* Other)
 {
-	// If item was moved from user to store (check can sell)
-	UE_LOG(LogTemp, Warning, TEXT("Checking move to tradeslot"));
-	return Super::CheckDestinationPrerequisites(Destination);
-}
-
-void UTradeSlot::PerformSourcePrerequisites(UBaseSlot* Source)
-{
-	// Buy
 	UE_LOG(LogTemp, Warning, TEXT("Performed Source Prerequisites"));
-	return Super::PerformSourcePrerequisites(Source);
-}
+	Super::PerformPrerequisites(Other);
+	AActor* OtherOwner = Cast<AActor>(Other->GetOuter()->GetOuter());
+	
+	for (const TTuple<UBaseItem*, int> Price : Item->BasePrice)
+	{
+		TArray<UBaseSlot*> ItemSlots = UInventoryFunctionLibrary::GetSlotsWithItem(OtherOwner, Price.Key);
+		int RemainingPrice = Price.Value;
+		for (UBaseSlot* ItemSlot : ItemSlots)
+		{
+			const int WithdrawAmount = FMath::Min(RemainingPrice, ItemSlot->GetAmount());
+			ItemSlot->SetSlot(Price.Key, ItemSlot->GetAmount() - WithdrawAmount);
+			RemainingPrice -= WithdrawAmount;
 
-void UTradeSlot::PerformDestinationPrerequisites(UBaseSlot* Destination)
-{
-	// Sell
-	UE_LOG(LogTemp, Warning, TEXT("Performed Destination Prerequisites"));
-	return Super::PerformSourcePrerequisites(Destination);
+			if (RemainingPrice == 0)
+			{
+				return;
+			}
+		}
+	}
 }

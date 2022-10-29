@@ -9,7 +9,7 @@
 #include "Slots/InventorySlot.h"
 #include "Inventory.generated.h"
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class INVENTORYSYSTEM_API UInventory : public UActorComponent
 {
 	GENERATED_BODY()
@@ -17,26 +17,29 @@ class INVENTORYSYSTEM_API UInventory : public UActorComponent
 public:
 	UInventory();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	int BaseSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	float MaxWeight;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	bool AutoResize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	TSubclassOf<UBaseSlot> SlotClass = UInventorySlot::StaticClass();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	TMap<UBaseItem*, int> InitialItems;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	UInventorySettings* InventoryConfig;
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	TArray<UBaseSlot*> GetInventorySlots();
+
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	TArray<UBaseSlot*> GetSlotsWithItem(UBaseItem* Item) const;
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	TSoftObjectPtr<UTexture2D> GetIcon() const;
