@@ -7,21 +7,20 @@
 #include "Items/BaseItem.h"
 #include "BaseSlot.generated.h"
 
-UENUM()
-enum class ETransferErrorCodes
+UENUM(BlueprintType)
+enum class ETransferErrorCodes : uint8
 {
 	None,
-	ListInvalid,
-	MoveInvalid,
 	PrerequisiteInvalid
 };
 
-UENUM()
-enum class ETransferType
+UENUM(BlueprintType)
+enum class ETransferType : uint8
 {
 	None,
 	Merge,
-	Swap
+	Swap,
+	Move,
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
@@ -37,7 +36,7 @@ class INVENTORYSYSTEM_API UBaseSlot : public UObject
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	bool TryTransfer(UBaseSlot* Source);
+	bool TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error);
 	
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
 	void Swap(UBaseSlot* Source);

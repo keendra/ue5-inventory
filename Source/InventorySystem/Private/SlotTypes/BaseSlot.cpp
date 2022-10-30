@@ -3,13 +3,11 @@
 #include "Slots/BaseSlot.h"
 
 #include "IntVectorTypes.h"
-#include "../../../Plugins/Developer/RiderLink/Source/RD/thirdparty/spdlog/include/spdlog/fmt/bundled/format.h"
 
-bool UBaseSlot::TryTransfer(UBaseSlot* Source)
+bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 {
 	ETransferType TransferType;
-	ETransferErrorCodes ErrorCode;
-	if(!CheckTransferType(Source, TransferType, ErrorCode))
+	if(!CheckTransferType(Source, TransferType, Error))
 	{
 		return false;
 	}
@@ -17,6 +15,7 @@ bool UBaseSlot::TryTransfer(UBaseSlot* Source)
 	UBaseSlot* Original = DuplicateObject(Source, Source->GetOuter());
 	switch (TransferType)
 	{
+	case ETransferType::Move:
 	case ETransferType::Merge:
 		MergeAll(Source);
 		break;
@@ -57,18 +56,24 @@ bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETrans
 		return false;
 	}
 	
+	if(Item == nullptr)
+	{
+		Type = ETransferType::Move;
+		Error = ETransferErrorCodes::None;
+		return true;
+	}
 	if(IsSameType(Source->Item))
 	{
 		if(const int MaxSize = Source->Item->MaxStackSize; MaxSize == 0 || MaxSize > Source->Amount)
 		{
 			Type = ETransferType::Merge;
-			Error = ETransferErrorCodes::PrerequisiteInvalid;
+			Error = ETransferErrorCodes::None;
 			return true;
 		}
 	}
 
 	Type = ETransferType::Swap;
-	Error = ETransferErrorCodes::PrerequisiteInvalid;
+	Error = ETransferErrorCodes::None;
 	return true;
 }
 
