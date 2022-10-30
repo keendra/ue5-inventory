@@ -20,8 +20,9 @@ bool UTradeSlot::CheckPrerequisites(UBaseSlot* Other)
 
 	for (const TTuple<UBaseItem*, int> Price : Item->BasePrice)
 	{
+		const int TotalAmount = Price.Value * Amount;
 		if (const int OwnedAmount = UInventoryFunctionLibrary::GetOwnItemAmount(OtherOwner, Price.Key);
-			Price.Value > OwnedAmount)
+			TotalAmount > OwnedAmount)
 		{
 			return false;
 		}
@@ -39,7 +40,7 @@ void UTradeSlot::PerformPrerequisites(UBaseSlot* Other)
 	for (const TTuple<UBaseItem*, int> Price : Item->BasePrice)
 	{
 		TArray<UBaseSlot*> ItemSlots = UInventoryFunctionLibrary::GetSlotsWithItem(OtherOwner, Price.Key);
-		int RemainingPrice = Price.Value;
+		int RemainingPrice = Price.Value * Amount;
 		for (UBaseSlot* ItemSlot : ItemSlots)
 		{
 			const int WithdrawAmount = FMath::Min(RemainingPrice, ItemSlot->GetAmount());
