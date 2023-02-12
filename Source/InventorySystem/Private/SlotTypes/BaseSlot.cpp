@@ -2,7 +2,7 @@
 
 #include "Slots/BaseSlot.h"
 
-#include "IntVectorTypes.h"
+DEFINE_LOG_CATEGORY(LogInventory);
 
 bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 {
@@ -17,7 +17,7 @@ bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 	{
 	case ETransferType::Move:
 	case ETransferType::Merge:
-		MergeAll(Source);
+		MergeAll(Source, Error);
 		break;
 	case ETransferType::Swap:
 		Swap(Source);
@@ -82,19 +82,29 @@ bool UBaseSlot::IsSameType(const UBaseItem* SourceItem) const
 	return SourceItem != nullptr && Item != nullptr ? SourceItem == Item : false;
 }
 
-void UBaseSlot::MergeAll(UBaseSlot* Source)
+bool UBaseSlot::MergeAll(UBaseSlot* Source, ETransferErrorCodes& Error)
 {
 	const int MaxSize = Source->Item->MaxStackSize;
 	const int Total = Amount + Source->Amount;
+
+	if (Total > MaxSize && MaxSize > 0) 
+	{
+		UE_LOG(LogInventory, Error, TEXT("Overflow occurred while merging items, MaxStackSize is %d but %d items are being merged"), MaxSize, Total);
+		// An overflow would occur, set the Error parameter accordingly
+		Error = ETransferErrorCodes::Overflow;
+		return false;
+	}
+	
 	const int DestinationAmount = MaxSize > 0 ? FMath::Min(Total, MaxSize) : Total;
 	const int SourceAmount = MaxSize > 0 ? FMath::Max(0, Total - MaxSize) : 0;
 	SetSlot(Source->Item, DestinationAmount);
 	Source->SetSlot(Source->Item, SourceAmount);
+	return true;
 }
 
 void UBaseSlot::SetSlot(UBaseItem* NewItem, const int NewAmount)
 {
 	this->Item = NewItem;
 	this->Amount = NewAmount;
-	OnSlotUpdated.Broadcast();
+	OnSlotUpdatedDelegate.Broadcast(this);
 }
