@@ -6,6 +6,11 @@ DEFINE_LOG_CATEGORY(LogInventory);
 
 bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 {
+	if (this == Source)
+	{
+		return true;
+	}
+	
 	ETransferType TransferType;
 	if(!CheckTransferType(Source, TransferType, Error))
 	{
@@ -27,7 +32,8 @@ bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 		return false;
 	}
 
-	Original->PerformPrerequisites(this);
+	Original->PerformSourcePrerequisites(this);
+	this->PerformDestinationPrerequisites(Original);
 	return true;
 }
 
@@ -38,21 +44,30 @@ void UBaseSlot::Swap(UBaseSlot* Source)
 	Source->SetSlot(Original->Item, Original->Amount);
 }
 
-bool UBaseSlot::CheckPrerequisites(UBaseSlot* Other)
+bool UBaseSlot::CheckDestinationPrerequisites(UBaseSlot* Other, ETransferErrorCodes& Error)
 {
 	return true;
 }
 
-void UBaseSlot::PerformPrerequisites(UBaseSlot* Other)
+bool UBaseSlot::CheckSourcePrerequisites(UBaseSlot* Other, ETransferErrorCodes& Error)
+{
+	return true;
+}
+
+void UBaseSlot::PerformDestinationPrerequisites(UBaseSlot* Other)
+{
+}
+
+void UBaseSlot::PerformSourcePrerequisites(UBaseSlot* Other)
 {
 }
 
 bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETransferErrorCodes& Error)
 {
-	if(!Source->CheckPrerequisites(this))
+	Type = ETransferType::None;
+
+	if(!Source->CheckSourcePrerequisites(this, Error) || !this->CheckDestinationPrerequisites(Source, Error))
 	{
-		Type = ETransferType::None;
-		Error = ETransferErrorCodes::PrerequisiteInvalid;
 		return false;
 	}
 	
@@ -80,6 +95,14 @@ bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETrans
 bool UBaseSlot::IsSameType(const UBaseItem* SourceItem) const
 {
 	return SourceItem != nullptr && Item != nullptr ? SourceItem == Item : false;
+}
+
+bool UBaseSlot::IsSameOwner(const UBaseSlot* Other) const
+{
+	const AActor* Owner = Cast<AActor>(this->GetOuter()->GetOuter());
+	const AActor* OtherOwner = Cast<AActor>(Other->GetOuter()->GetOuter());
+
+	return Owner == OtherOwner;
 }
 
 bool UBaseSlot::MergeAll(UBaseSlot* Source, ETransferErrorCodes& Error)

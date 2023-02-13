@@ -10,15 +10,16 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);
 
-/*
- * @enum ETransferErrorCodes
- * Enum that represents the error codes for a transfer between two slots.
+/** 
+ * Enum that defines the possible error codes that can occur during a trade transaction.
  */
 UENUM(BlueprintType)
 enum class ETransferErrorCodes : uint8
 {
 	None,
-	PrerequisiteInvalid,
+	SourcePrerequisiteInvalid,
+	DestinationPrerequisiteInvalid,
+	InsufficientAmount,
 	Overflow
 };
 
@@ -71,18 +72,32 @@ public:
 	void Swap(UBaseSlot* Source);
 
 	/*
-	 * @function CheckPrerequisites
-	 * Checks if the prerequisites for a transfer between two slots are met.
+	 * @function CheckDestinationPrerequisites
+	 * Checks if the prerequisites for a transfer between two slots *to* this slot are met.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	virtual bool CheckPrerequisites(UBaseSlot* Other);
+	virtual bool CheckDestinationPrerequisites(UBaseSlot* Other, ETransferErrorCodes& Error);
 
 	/*
-	* @function PerformPrerequisites
-	* Performs the prerequisites for a transfer between two slots.
-	*/
+	 * @function CheckSourcePrerequisites
+	 * Checks if the prerequisites for a transfer between two slots *from* this slot are met.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
-	virtual void PerformPrerequisites(UBaseSlot* Other);
+	virtual bool CheckSourcePrerequisites(UBaseSlot* Other, ETransferErrorCodes& Error);
+
+	/*
+	 * @function PerformDestinationPrerequisites
+	 * Performs the prerequisites for a transfer between two slots.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
+	virtual void PerformDestinationPrerequisites(UBaseSlot* Other);
+
+	/*
+	 * @function PerformSourcePrerequisites
+	 * Performs the prerequisites for a transfer between two slots.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
+	virtual void PerformSourcePrerequisites(UBaseSlot* Other);
 
 	/*
 	* @function CheckTransferType
@@ -133,6 +148,12 @@ protected:
 	 */
 	UPROPERTY(BlueprintReadWrite, Category="Inventory System")
 	int Amount;
+
+	/*
+	 * @function IsSameOwner
+	 * Checks if two slots have the same owner.
+	 */
+	bool IsSameOwner(const UBaseSlot* Other) const;
 
 private:
 	bool MergeAll(UBaseSlot* Source, ETransferErrorCodes& Error);
