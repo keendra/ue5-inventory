@@ -9,9 +9,8 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class INVENTORYSYSTEM_API UEquipables : public UBaseItem
 {
 	GENERATED_BODY()
-	
 };

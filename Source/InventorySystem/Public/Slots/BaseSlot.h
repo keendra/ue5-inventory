@@ -99,6 +99,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
 	virtual void PerformSourcePrerequisites(UBaseSlot* Other);
 
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
+	bool IsFull() const;
+	
 	/*
 	* @function CheckTransferType
 	* Checks the type of transfer that can be performed between two slots.

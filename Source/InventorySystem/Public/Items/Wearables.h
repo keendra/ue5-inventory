@@ -9,9 +9,8 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class INVENTORYSYSTEM_API UWearable : public UBaseItem
 {
 	GENERATED_BODY()
-	
 };

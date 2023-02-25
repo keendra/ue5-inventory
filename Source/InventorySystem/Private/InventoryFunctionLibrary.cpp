@@ -19,6 +19,19 @@ TArray<UInventory*> UInventoryFunctionLibrary::GetVisibleInventories(AActor* Act
 	});
 }
 
+UInventory* UInventoryFunctionLibrary::GetInventory(AActor* Actor, UBaseItem* Item)
+{
+	TArray<UInventory*> Components;
+	Actor->GetComponents<UInventory>(Components);
+
+	return *Components.FindByPredicate([Item](const UInventory* Inventory)
+		{
+			return Inventory->InventoryConfig == nullptr
+				|| Inventory->InventoryConfig->ParentType == nullptr
+				|| Item->GetClass()->IsChildOf(Inventory->InventoryConfig->ParentType);
+	});
+}
+
 TArray<UBaseSlot*> UInventoryFunctionLibrary::GetSlotsWithItem(AActor* Actor, UBaseItem* Item)
 {
 	TArray<UInventory*> Components;

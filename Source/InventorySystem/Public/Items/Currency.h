@@ -9,9 +9,8 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class INVENTORYSYSTEM_API UCurrency : public UBaseItem
 {
 	GENERATED_BODY()
-	
 };

@@ -62,6 +62,12 @@ void UBaseSlot::PerformSourcePrerequisites(UBaseSlot* Other)
 {
 }
 
+bool UBaseSlot::IsFull() const
+{
+	const int MaxSize = Item->MaxStackSize;
+	return MaxSize != 0 && MaxSize <= Amount;
+}
+
 bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETransferErrorCodes& Error)
 {
 	Type = ETransferType::None;

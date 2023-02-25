@@ -67,6 +67,8 @@ public:
 	 * Retrieves all inventory slots that contain the specified item
 	 *
 	 * @param Item The item to search for
+	 * @param FilterFullSlots
+	 * @param AllowEmptySlots
 	 *
 	 * @return An array of UBaseSlot pointers that contain the specified item
 	 *
@@ -75,6 +77,38 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	TArray<UBaseSlot*> GetSlotsWithItem(UBaseItem* Item) const;
+
+	/**
+	 * Searches for a slot that can hold the specified item.
+	 * 
+	 * @param Item The item to find a slot for.
+	 * @return A pointer to a slot that can hold the item, or nullptr if no slot is available.
+	 *
+	 * @see UBaseItem
+	 */
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	UBaseSlot* GetSlotForItem(UBaseItem* Item) const;
+
+	/**
+	 * Adds an item to the inventory.
+	 * 
+	 * @param Item The item to add.
+	 * @return True if the item was successfully added, false otherwise.
+	 *
+	 * @see UBaseItem
+	 */
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+    bool AddItem(UBaseItem* Item) const;
+
+	/**
+	 * Adds multiple items to the inventory.
+	 * @param Item The item to add.
+	 * @param Amount The number of items to add.
+	 *
+	 * @see UBaseItem
+	 */
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	void AddItems(UBaseItem* Item, int Amount = 1) const;
 
 	/**
 	 * Retrieves the icon texture for the inventory
