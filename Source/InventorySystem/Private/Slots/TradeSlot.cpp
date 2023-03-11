@@ -47,9 +47,9 @@ void UTradeSlot::PerformSourcePrerequisites(UBaseSlot* Destination)
 
 bool UTradeSlot::ValidateCost(const UBaseSlot* TradeSlot, AActor* Buyer, ETransferErrorCodes& Error)
 {
-	for (const TTuple<UBaseItem*, int> Price : TradeSlot->GetItem()->BasePrice)
+	for (const TTuple<UBaseItem*, int> Price : TradeSlot->Item->BasePrice)
 	{
-		const int TotalAmount = Price.Value * TradeSlot->GetAmount();
+		const int TotalAmount = Price.Value * TradeSlot->Amount;
 		if (const int OwnedAmount = UInventoryFunctionLibrary::GetOwnItemAmount(Buyer, Price.Key);
 			TotalAmount > OwnedAmount)
 		{
@@ -66,14 +66,14 @@ bool UTradeSlot::ValidateCost(const UBaseSlot* TradeSlot, AActor* Buyer, ETransf
 void UTradeSlot::TransferCost(const UBaseSlot* TradeSlot, AActor* Trader, const float Modifier)
 {
 	const int Direction = Modifier < 0 ? -1 : 1;
-	for (const TTuple<UBaseItem*, int> Price : TradeSlot->GetItem()->BasePrice)
+	for (const TTuple<UBaseItem*, int> Price : TradeSlot->Item->BasePrice)
 	{
 		TArray<UBaseSlot*> ItemSlots = UInventoryFunctionLibrary::GetSlotsWithItem(Trader, Price.Key);
-		float Remaining = Price.Value * TradeSlot->GetAmount() * FMath::Abs(Modifier);
+		float Remaining = Price.Value * TradeSlot->Amount * FMath::Abs(Modifier);
 		for (UBaseSlot* ItemSlot : ItemSlots)
 		{
-			const float Change = Direction < 0 ? FMath::Max(Remaining, ItemSlot->GetAmount()) : Remaining;
-			ItemSlot->SetSlot(Price.Key, ItemSlot->GetAmount() + Remaining * Direction);
+			const float Change = Direction < 0 ? FMath::Max(Remaining, ItemSlot->Amount) : Remaining;
+			ItemSlot->SetSlot(Price.Key, ItemSlot->Amount + Remaining * Direction);
 			Remaining -= Change;
 
 			if (Remaining == 0)

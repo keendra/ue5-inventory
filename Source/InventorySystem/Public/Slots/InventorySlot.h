@@ -15,4 +15,6 @@ class INVENTORYSYSTEM_API UInventorySlot : public UBaseSlot
 	GENERATED_BODY()
 public:
 	virtual void SetSlot(UBaseItem* NewItem, int NewAmount) override;
+
+	virtual bool ChangeAmount(int DiffAmount) override;
 };

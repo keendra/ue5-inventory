@@ -54,7 +54,7 @@ int UInventoryFunctionLibrary::GetOwnItemAmount(AActor* Actor, UBaseItem* Item)
 
 	for (const UBaseSlot* Slot : OwnedInSlots)
 	{
-		Amount += Slot->GetAmount();
+		Amount += Slot->Amount;
 	}
 
 	return Amount;

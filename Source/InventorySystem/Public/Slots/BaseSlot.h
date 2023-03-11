@@ -65,6 +65,13 @@ public:
 	bool TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error);
 
 	/*
+	 * @function TrySplit
+	 * Tries to slit items into two slots.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
+	bool TrySplit(int SplitAmount, ETransferErrorCodes& Error);
+
+	/*
 	 * @function Swap
 	 * Swaps items between two slots.
 	 */
@@ -100,6 +107,9 @@ public:
 	virtual void PerformSourcePrerequisites(UBaseSlot* Other);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory System")
+	bool IsEmpty() const;
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
 	bool IsFull() const;
 	
 	/*
@@ -116,6 +126,12 @@ public:
 	virtual void SetSlot(UBaseItem* NewItem, int NewAmount);
 
 	/*
+	* @function ChangeAmount
+	* Changes the amount for a slot.
+	*/
+	virtual bool ChangeAmount(int DiffAmount);
+
+	/*
 	 * @function IsSameType
 	 * Checks if two items are of the same type.
 	 */
@@ -128,30 +144,21 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory System")
 	FSlotUpdated OnSlotUpdatedDelegate;
 
-	[[nodiscard]] int GetAmount() const
-	{
-		return Amount;
-	}
-
-	[[nodiscard]] UBaseItem* GetItem() const
-	{
-		return Item;
-	}
-protected:
 	/*
 	 * @property Item
 	 * A pointer to the item held by the slot.
 	 */
-	UPROPERTY(BlueprintReadWrite, Category="Inventory System")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory System")
 	UBaseItem* Item;
 
 	/*
 	 * @property Amount
 	 * The amount of items held by the slot.
 	 */
-	UPROPERTY(BlueprintReadWrite, Category="Inventory System")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory System")
 	int Amount;
 
+protected:
 	/*
 	 * @function IsSameOwner
 	 * Checks if two slots have the same owner.

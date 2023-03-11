@@ -78,6 +78,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	TArray<UBaseSlot*> GetSlotsWithItem(UBaseItem* Item) const;
 
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	UBaseSlot* GetEmptySlotForItem(UBaseItem* Item) const;
+
 	/**
 	 * Searches for a slot that can hold the specified item.
 	 * 
@@ -93,12 +96,13 @@ public:
 	 * Adds an item to the inventory.
 	 * 
 	 * @param Item The item to add.
+	 * @param EmptyOnly
 	 * @return True if the item was successfully added, false otherwise.
 	 *
 	 * @see UBaseItem
 	 */
 	UFUNCTION(BlueprintCallable, Category="Inventory")
-    bool AddItem(UBaseItem* Item) const;
+    bool AddItem(UBaseItem* Item, bool EmptyOnly = false) const;
 
 	/**
 	 * Adds multiple items to the inventory.
@@ -108,7 +112,7 @@ public:
 	 * @see UBaseItem
 	 */
 	UFUNCTION(BlueprintCallable, Category="Inventory")
-	void AddItems(UBaseItem* Item, int Amount = 1) const;
+	bool AddItems(UBaseItem* Item, int Amount = 1, bool EmptyOnly = false) const;
 
 	/**
 	 * Retrieves the icon texture for the inventory

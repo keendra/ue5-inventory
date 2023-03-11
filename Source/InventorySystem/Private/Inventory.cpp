@@ -45,6 +45,23 @@ TArray<UBaseSlot*> UInventory::GetSlotsWithItem(UBaseItem* Item) const
 	});
 }
 
+UBaseSlot* UInventory::GetEmptySlotForItem(UBaseItem* Item) const
+{
+	UBaseSlot* const * EmptySlot = Slots.FindByPredicate([](const UBaseSlot* Slot)
+	{
+		return Slot->Amount == 0;
+	});
+
+	if (*EmptySlot != nullptr)
+	{
+		UE_LOG(LogTemp, Display, TEXT("GetSlotForItem - Found empty slot."));
+		return *EmptySlot;
+	}
+    
+	UE_LOG(LogTemp, Warning, TEXT("GetSlotForItem - No available slots."));
+	return nullptr;
+}
+
 UBaseSlot* UInventory::GetSlotForItem(UBaseItem* Item) const
 {
 	UBaseSlot* const * ItemSlot = Slots.FindByPredicate([Item](const UBaseSlot* Slot)
@@ -58,26 +75,15 @@ UBaseSlot* UInventory::GetSlotForItem(UBaseItem* Item) const
 		return *ItemSlot;
 	}
 
-	UBaseSlot* const * EmptySlot = Slots.FindByPredicate([](const UBaseSlot* Slot)
-	{
-		return Slot->GetAmount() == 0;
-	});
-
-	if (*EmptySlot != nullptr)
-	{
-		UE_LOG(LogTemp, Display, TEXT("GetSlotForItem - Found empty slot."));
-		return *EmptySlot;
-	}
-    
-	UE_LOG(LogTemp, Warning, TEXT("GetSlotForItem - No available slots."));
-	return nullptr;
+	return GetEmptySlotForItem(Item);
 }
 
-bool UInventory::AddItem(UBaseItem* Item) const
+bool UInventory::AddItem(UBaseItem* Item, const bool EmptyOnly) const
 {
-	if (UBaseSlot* AvailableSlot = GetSlotForItem(Item); AvailableSlot != nullptr)
+	if (UBaseSlot* AvailableSlot = EmptyOnly ? GetEmptySlotForItem(Item) : GetSlotForItem(Item);
+		AvailableSlot != nullptr)
 	{
-		AvailableSlot->SetSlot(Item, AvailableSlot->GetAmount() + 1);
+		AvailableSlot->SetSlot(Item, AvailableSlot->Amount + 1);
 		UE_LOG(LogTemp, Display, TEXT("Added item %s to slot"), *Item->GetName());
 		return true;
 	}
@@ -86,15 +92,18 @@ bool UInventory::AddItem(UBaseItem* Item) const
 	return false;
 }
 
-void UInventory::AddItems(UBaseItem* Item, const int Amount) const
+bool UInventory::AddItems(UBaseItem* Item, const int Amount, const bool EmptyOnly) const
 {
+	/* TODO: This should validate first that there are enough slots if more than one is needed due to MaxAmount */
 	for (int Count = 0; Count < Amount; Count++)
 	{
-		if(!AddItem(Item))
+		if(!AddItem(Item, EmptyOnly))
 		{
-			break;
+			return false;
 		}
 	}
+
+	return true;
 }
 
 TSoftObjectPtr<UTexture2D> UInventory::GetIcon() const

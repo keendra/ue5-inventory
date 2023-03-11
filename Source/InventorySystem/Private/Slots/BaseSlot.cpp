@@ -2,15 +2,12 @@
 
 #include "Slots/BaseSlot.h"
 
+#include "Inventory.h"
+
 DEFINE_LOG_CATEGORY(LogInventory);
 
 bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
-{
-	if (this == Source)
-	{
-		return true;
-	}
-	
+{	
 	ETransferType TransferType;
 	if(!CheckTransferType(Source, TransferType, Error))
 	{
@@ -35,6 +32,20 @@ bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 	Original->PerformSourcePrerequisites(this);
 	this->PerformDestinationPrerequisites(Original);
 	return true;
+}
+
+bool UBaseSlot::TrySplit(int SplitAmount, ETransferErrorCodes& Error)
+{
+	const UInventory* Inventory = Cast<UInventory>(this->GetOuter());
+	if(Inventory->AddItems(Item, SplitAmount, true))
+	{
+		UE_LOG(LogInventory, Error, TEXT("Did this"));
+		ChangeAmount(-SplitAmount);
+		return true;
+	}
+
+	UE_LOG(LogInventory, Error, TEXT("Did fail this"));
+	return false;
 }
 
 void UBaseSlot::Swap(UBaseSlot* Source)
@@ -62,6 +73,11 @@ void UBaseSlot::PerformSourcePrerequisites(UBaseSlot* Other)
 {
 }
 
+bool UBaseSlot::IsEmpty() const
+{
+	return Amount == 0;
+}
+
 bool UBaseSlot::IsFull() const
 {
 	const int MaxSize = Item->MaxStackSize;
@@ -69,10 +85,8 @@ bool UBaseSlot::IsFull() const
 }
 
 bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETransferErrorCodes& Error)
-{
-	Type = ETransferType::None;
-
-	if(!Source->CheckSourcePrerequisites(this, Error) || !this->CheckDestinationPrerequisites(Source, Error))
+{	
+	if(this == Source || !Source->CheckSourcePrerequisites(this, Error) || !this->CheckDestinationPrerequisites(Source, Error))
 	{
 		return false;
 	}
@@ -80,7 +94,6 @@ bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETrans
 	if(Item == nullptr)
 	{
 		Type = ETransferType::Move;
-		Error = ETransferErrorCodes::None;
 		return true;
 	}
 	if(IsSameType(Source->Item))
@@ -88,13 +101,11 @@ bool UBaseSlot::CheckTransferType(UBaseSlot* Source, ETransferType& Type, ETrans
 		if(const int MaxSize = Source->Item->MaxStackSize; MaxSize == 0 || MaxSize > Source->Amount)
 		{
 			Type = ETransferType::Merge;
-			Error = ETransferErrorCodes::None;
 			return true;
 		}
 	}
 
 	Type = ETransferType::Swap;
-	Error = ETransferErrorCodes::None;
 	return true;
 }
 
@@ -136,4 +147,16 @@ void UBaseSlot::SetSlot(UBaseItem* NewItem, const int NewAmount)
 	this->Item = NewItem;
 	this->Amount = NewAmount;
 	OnSlotUpdatedDelegate.Broadcast(this);
+}
+
+bool UBaseSlot::ChangeAmount(const int DiffAmount)
+{
+	if (Amount + DiffAmount < 0)
+	{
+		return false;
+	}
+	
+	this->Amount = Amount += DiffAmount;
+	OnSlotUpdatedDelegate.Broadcast(this);
+	return true;
 }
