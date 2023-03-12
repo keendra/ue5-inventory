@@ -69,7 +69,7 @@ UBaseSlot* UInventory::GetSlotForItem(UBaseItem* Item) const
 		return Slot->IsSameType(Item) && !Slot->IsFull();
 	});
 
-	if (*ItemSlot != nullptr)
+	if (ItemSlot != nullptr && *ItemSlot != nullptr)
 	{
 		UE_LOG(LogTemp, Display, TEXT("GetSlotForItem - Found slot for item."));
 		return *ItemSlot;

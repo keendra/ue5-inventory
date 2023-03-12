@@ -123,12 +123,14 @@ public:
 	* @function SetSlot
 	* Sets the item and amount for a slot.
 	*/
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
 	virtual void SetSlot(UBaseItem* NewItem, int NewAmount);
 
 	/*
 	* @function ChangeAmount
 	* Changes the amount for a slot.
 	*/
+	UFUNCTION(BlueprintCallable, Category="Inventory System")
 	virtual bool ChangeAmount(int DiffAmount);
 
 	/*

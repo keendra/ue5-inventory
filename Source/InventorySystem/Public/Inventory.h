@@ -129,5 +129,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY()
 	TArray<UBaseSlot*> Slots;	
 };
