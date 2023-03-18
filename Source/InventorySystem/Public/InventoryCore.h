@@ -7,7 +7,7 @@
 #include "InventorySettings.h"
 #include "Components/ActorComponent.h"
 #include "Slots/InventorySlot.h"
-#include "Inventory.generated.h"
+#include "InventoryCore.generated.h"
 
 /**
  * UInventory is a component class that represents an in-game inventory system. It contains a list of inventory slots,
@@ -22,12 +22,12 @@
  * @see UBaseItem
  */
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class INVENTORYSYSTEM_API UInventory : public UActorComponent
+class INVENTORYSYSTEM_API UInventoryCore : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UInventory();
+	UInventoryCore();
 
 	/** The base size of the inventory */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")

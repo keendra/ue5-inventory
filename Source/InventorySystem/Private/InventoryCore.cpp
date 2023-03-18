@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Inventory.h"
+#include "InventoryCore.h"
 #include "Slots/BaseSlot.h"
 
 // Sets default values for this component's properties
-UInventory::UInventory()
+UInventoryCore::UInventoryCore()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UInventory::BeginPlay()
+void UInventoryCore::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -32,12 +32,12 @@ void UInventory::BeginPlay()
 	}
 }
 
-TArray<UBaseSlot*> UInventory::GetInventorySlots()
+TArray<UBaseSlot*> UInventoryCore::GetInventorySlots()
 {
 	return Slots;
 }
 
-TArray<UBaseSlot*> UInventory::GetSlotsWithItem(UBaseItem* Item) const
+TArray<UBaseSlot*> UInventoryCore::GetSlotsWithItem(UBaseItem* Item) const
 {
 	return Slots.FilterByPredicate([Item](const UBaseSlot* Slot)
 	{
@@ -45,7 +45,7 @@ TArray<UBaseSlot*> UInventory::GetSlotsWithItem(UBaseItem* Item) const
 	});
 }
 
-UBaseSlot* UInventory::GetEmptySlotForItem(UBaseItem* Item) const
+UBaseSlot* UInventoryCore::GetEmptySlotForItem(UBaseItem* Item) const
 {
 	UBaseSlot* const * EmptySlot = Slots.FindByPredicate([](const UBaseSlot* Slot)
 	{
@@ -62,7 +62,7 @@ UBaseSlot* UInventory::GetEmptySlotForItem(UBaseItem* Item) const
 	return nullptr;
 }
 
-UBaseSlot* UInventory::GetSlotForItem(UBaseItem* Item) const
+UBaseSlot* UInventoryCore::GetSlotForItem(UBaseItem* Item) const
 {
 	UBaseSlot* const * ItemSlot = Slots.FindByPredicate([Item](const UBaseSlot* Slot)
 	{
@@ -78,7 +78,7 @@ UBaseSlot* UInventory::GetSlotForItem(UBaseItem* Item) const
 	return GetEmptySlotForItem(Item);
 }
 
-bool UInventory::AddItem(UBaseItem* Item, const bool EmptyOnly) const
+bool UInventoryCore::AddItem(UBaseItem* Item, const bool EmptyOnly) const
 {
 	if (UBaseSlot* AvailableSlot = EmptyOnly ? GetEmptySlotForItem(Item) : GetSlotForItem(Item);
 		AvailableSlot != nullptr)
@@ -92,7 +92,7 @@ bool UInventory::AddItem(UBaseItem* Item, const bool EmptyOnly) const
 	return false;
 }
 
-bool UInventory::AddItems(UBaseItem* Item, const int Amount, const bool EmptyOnly) const
+bool UInventoryCore::AddItems(UBaseItem* Item, const int Amount, const bool EmptyOnly) const
 {
 	/* TODO: This should validate first that there are enough slots if more than one is needed due to MaxAmount */
 	for (int Count = 0; Count < Amount; Count++)
@@ -106,7 +106,7 @@ bool UInventory::AddItems(UBaseItem* Item, const int Amount, const bool EmptyOnl
 	return true;
 }
 
-TSoftObjectPtr<UTexture2D> UInventory::GetIcon() const
+TSoftObjectPtr<UTexture2D> UInventoryCore::GetIcon() const
 {
 	return InventoryConfig == nullptr ? nullptr : InventoryConfig->Icon;
 }

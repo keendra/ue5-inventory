@@ -3,12 +3,12 @@
 
 #include "InventoryFunctionLibrary.h"
 
-TArray<UInventory*> UInventoryFunctionLibrary::GetVisibleInventories(AActor* Actor)
+TArray<UInventoryCore*> UInventoryFunctionLibrary::GetVisibleInventories(AActor* Actor)
 {
-	TArray<UInventory*> Components;
-	Actor->GetComponents<UInventory>(Components);
+	TArray<UInventoryCore*> Components;
+	Actor->GetComponents<UInventoryCore>(Components);
 
-	return Components.FilterByPredicate([](const UInventory* Inventory)
+	return Components.FilterByPredicate([](const UInventoryCore* Inventory)
 		{
 			if (Inventory->InventoryConfig == nullptr)
 			{
@@ -19,12 +19,12 @@ TArray<UInventory*> UInventoryFunctionLibrary::GetVisibleInventories(AActor* Act
 	});
 }
 
-UInventory* UInventoryFunctionLibrary::GetInventory(AActor* Actor, UBaseItem* Item)
+UInventoryCore* UInventoryFunctionLibrary::GetInventory(AActor* Actor, UBaseItem* Item)
 {
-	TArray<UInventory*> Components;
-	Actor->GetComponents<UInventory>(Components);
+	TArray<UInventoryCore*> Components;
+	Actor->GetComponents<UInventoryCore>(Components);
 
-	return *Components.FindByPredicate([Item](const UInventory* Inventory)
+	return *Components.FindByPredicate([Item](const UInventoryCore* Inventory)
 		{
 			return Inventory->InventoryConfig == nullptr
 				|| Inventory->InventoryConfig->ParentType == nullptr
@@ -34,12 +34,12 @@ UInventory* UInventoryFunctionLibrary::GetInventory(AActor* Actor, UBaseItem* It
 
 TArray<UBaseSlot*> UInventoryFunctionLibrary::GetSlotsWithItem(AActor* Actor, UBaseItem* Item)
 {
-	TArray<UInventory*> Components;
-	Actor->GetComponents<UInventory>(Components);
+	TArray<UInventoryCore*> Components;
+	Actor->GetComponents<UInventoryCore>(Components);
 
 	TArray<UBaseSlot*> Result;
 
-	for (const UInventory* Inventory : Components)
+	for (const UInventoryCore* Inventory : Components)
 	{
 		Result.Append(Inventory->GetSlotsWithItem(Item));
 	}

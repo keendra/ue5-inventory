@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "InventoryCore.h"
 #include "CoreMinimal.h"
-#include "Inventory.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "InventoryFunctionLibrary.generated.h"
@@ -18,10 +18,10 @@ class INVENTORYSYSTEM_API UInventoryFunctionLibrary : public UBlueprintFunctionL
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-	static TArray<UInventory*> GetVisibleInventories(AActor* Actor);
+	static TArray<UInventoryCore*> GetVisibleInventories(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-	static UInventory* GetInventory(AActor* Actor, UBaseItem* Item);
+	static UInventoryCore* GetInventory(AActor* Actor, UBaseItem* Item);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	static TArray<UBaseSlot*> GetSlotsWithItem(AActor* Actor, UBaseItem* Item);

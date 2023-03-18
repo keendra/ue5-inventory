@@ -2,7 +2,7 @@
 
 #include "Slots/BaseSlot.h"
 
-#include "Inventory.h"
+#include "InventoryCore.h"
 
 DEFINE_LOG_CATEGORY(LogInventory);
 
@@ -36,7 +36,7 @@ bool UBaseSlot::TryTransfer(UBaseSlot* Source, ETransferErrorCodes& Error)
 
 bool UBaseSlot::TrySplit(int SplitAmount, ETransferErrorCodes& Error)
 {
-	const UInventory* Inventory = Cast<UInventory>(this->GetOuter());
+	const UInventoryCore* Inventory = Cast<UInventoryCore>(this->GetOuter());
 	if(Inventory->AddItems(Item, SplitAmount, true))
 	{
 		UE_LOG(LogInventory, Error, TEXT("Did this"));

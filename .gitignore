@@ -55,3 +55,7 @@ Session.vim
 
 # Rider
 Plugins/Developer/RiderLink/**
+
+#Other
+**/Binaries/
+**/Intermediate/
